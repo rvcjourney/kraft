@@ -86,7 +86,7 @@ app.post("/test-n8n", async (req, res) => {
   try {
     console.log("🧪 Testing N8N connection...");
     const testMessage = "Hi, I need a copper busbar solution";
-    const response = await generateN8nResponse(testMessage, []);
+    const response = await generateN8nResponse("test-session", testMessage, []);
     console.log("✅ N8N test successful:", response);
     res.json({
       success: true,

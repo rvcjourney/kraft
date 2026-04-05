@@ -186,6 +186,57 @@ export default function ChatAgent() {
   const formatTime = ts => new Date(ts).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   const inputValue  = input || transcript;
 
+  const renderMessageContent = (content) => {
+    if (!content) return null;
+
+    const lines = content.split(/\r?\n/);
+    const elements = [];
+    let bullets = [];
+    let numbered = [];
+    let key = 0;
+
+    const flushBullets = () => {
+      if (bullets.length) {
+        elements.push(<ul key={`ul-${key++}`} className="ca-fb-list">{bullets}</ul>);
+        bullets = [];
+      }
+    };
+    const flushNumbered = () => {
+      if (numbered.length) {
+        elements.push(<ol key={`ol-${key++}`} className="ca-fb-ol">{numbered}</ol>);
+        numbered = [];
+      }
+    };
+
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line || line === "---") {
+        flushBullets(); flushNumbered();
+        if (line === "---") elements.push(<hr key={`hr-${key++}`} className="ca-fb-hr" />);
+        continue;
+      }
+      if (line.startsWith("- ")) {
+        flushNumbered();
+        bullets.push(<li key={key++}>{line.slice(2)}</li>);
+        continue;
+      }
+      const numMatch = line.match(/^(\d+)\.\s+(.+)/);
+      if (numMatch) {
+        flushBullets();
+        numbered.push(<li key={key++}>{numMatch[2]}</li>);
+        continue;
+      }
+      flushBullets(); flushNumbered();
+      if (line.endsWith(":") && line.length < 60) {
+        elements.push(<p key={key++} className="ca-fb-section">{line}</p>);
+      } else {
+        elements.push(<p key={key++} className="ca-fb-text">{line}</p>);
+      }
+    }
+    flushBullets(); flushNumbered();
+    return <div className="ca-feedback">{elements}</div>;
+  };
+
   return (
     <div className="ca-root">
 
@@ -294,7 +345,7 @@ export default function ChatAgent() {
                 <div className="ca-msg-avatar ca-msg-avatar-agent">AI</div>
               )}
               <div className="ca-msg-body">
-                <div className="ca-bubble">{msg.content}</div>
+                <div className="ca-bubble">{renderMessageContent(msg.content)}</div>
                 {msg.ts && <span className="ca-msg-time">{formatTime(msg.ts)}</span>}
               </div>
               {msg.role === "user" && (

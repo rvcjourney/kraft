@@ -2,7 +2,8 @@
 // Handles webhook communication with n8n voice agent platform
 
 // const N8N_API_ENDPOINT = "https://n8n.b2botix.ai/webhook/voiceagent";
-const N8N_API_ENDPOINT = "https://n8n.b2botix.ai/webhook-test/voiceagentsales4";
+// const N8N_API_ENDPOINT = "https://n8n.b2botix.ai/webhook-test/voiceagentsales4";
+const N8N_API_ENDPOINT = "https://n8n.b2botix.ai/webhook/bfsi";
 const REQUEST_TIMEOUT_MS = 30000;
 const HISTORY_CONTEXT_SIZE = 5;
 
